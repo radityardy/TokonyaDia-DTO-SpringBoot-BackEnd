@@ -1,45 +1,51 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
+import com.enigmacamp.tokonyadia.repository.ProductRepository;
 import com.enigmacamp.tokonyadia.entity.Product;
 import com.enigmacamp.tokonyadia.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-
-    List<Product> dbProducts = new ArrayList<Product>();
+    private final ProductRepository productRepository;
 
     @Override
-    public Product saveProduct(Product product) {
-
-        // save product on list memory
-        dbProducts.add(product);
-
-        return product;
+    public Product create(Product product) {
+        return productRepository.saveAndFlush(product);
     }
 
     @Override
-    public List<Product> getAllProduct() {
-        return dbProducts;
-    }
-
-    @Override
-    public Product updateProduct(Product product) {
-        for (int i = 0; i < dbProducts.size(); i++) {
-            if (dbProducts.get(i).getId() == product.getId()) {
-                dbProducts.set(i, product);
-                break;
-            }
+    public List<Product> getAll(String name) {
+        if (name != null) {
+            return productRepository.findAllByNameLikeIgnoreCase("%" + name + "%");
         }
-        return product;
+        return productRepository.findAll();
     }
 
     @Override
-    public Product deleteProduct(Product product) {
-        dbProducts.removeIf(p -> p.getId() == product.getId());
-        return product;
+    public Product getById(String id) {
+        // optional -> List/satuan
+        Optional<Product> product = productRepository.findById(id);
+        return product.orElseThrow(null);
+    }
+
+
+    @Override
+    public Product update(Product product) {
+//        getById(product.getId());
+        if (!productRepository.existsById(product.getId())){
+            throw new IllegalArgumentException("Product ID " + product.getId() + " not found");
+        }
+        return productRepository.saveAndFlush(product);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        productRepository.deleteById(id);
     }
 }

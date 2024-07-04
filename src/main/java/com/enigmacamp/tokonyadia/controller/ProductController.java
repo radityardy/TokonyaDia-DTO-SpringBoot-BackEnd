@@ -1,47 +1,53 @@
 package com.enigmacamp.tokonyadia.controller;
 
+import com.enigmacamp.tokonyadia.constant.APIUrl;
 import com.enigmacamp.tokonyadia.entity.Product;
 import com.enigmacamp.tokonyadia.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/v1/product")
-public class ProductController {
-    ProductService productService;
 
-    @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(path = APIUrl.PRODUCT_API)
+public class ProductController {
+    private final ProductService productService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Product postProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    public Product createNewProduct(@RequestBody Product product) {
+        return productService.create(product);
     }
 
+    // /api/product?name = maka semua nama akan muncul namun jika di inputkan angka maka akan keluar sesuai namanya
     @GetMapping
-    public List<Product> getProduct() {
-        return productService.getAllProduct();
-    }
-    @PutMapping
-    public Product putProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    public List<Product> getAllProduct(
+            @RequestParam(name = "name", required = false) String name) {
+        return productService.getAll(name);
     }
 
-    @PatchMapping
-    public Product patchProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    @GetMapping("/{id}") // /api/product/{UUID}
+    public Product getProductById(@PathVariable String id) {
+        return productService.getById(id);
     }
 
-    @DeleteMapping
-    public Product deleteProduct(@RequestBody Product product) {
-        return productService.deleteProduct(product);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody Product product) {
+        try {
+            product.setId(id);
+            Product updatedProduct = productService.update(product);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 
+    @DeleteMapping("/{id}")
+    public void deleteById(String id) {
+        productService.deleteById(id);
+    }
 }

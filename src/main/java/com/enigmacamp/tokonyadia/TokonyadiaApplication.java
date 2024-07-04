@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 public class TokonyadiaApplication {
     public static void main(String[] args) {
-        System.out.println("Tokonyadia Application");
         SpringApplication.run(TokonyadiaApplication.class, args);
 
     }
-
 
 
 }

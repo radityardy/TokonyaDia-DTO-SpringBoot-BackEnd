@@ -1,42 +1,52 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
 import com.enigmacamp.tokonyadia.entity.Customer;
+import com.enigmacamp.tokonyadia.repository.CustomerRepository;
 import com.enigmacamp.tokonyadia.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
+    private final CustomerRepository customerRepository;
 
-    List<Customer> dbCustomers = new ArrayList<Customer>();
 
     @Override
-    public Customer saveCustomer(Customer customer) {
-        dbCustomers.add(customer);
-        return customer;
+    public Customer create(Customer customer) {
+        return customerRepository.save(customer);
     }
 
     @Override
-    public List<Customer> getAllCustomer() {
-        return dbCustomers;
-    }
-
-    @Override
-    public Customer updateCustomer(Customer customer) {
-        for (int i = 0; i < dbCustomers.size(); i++) {
-            if (dbCustomers.get(i).getId().equals(customer.getId())) {
-                dbCustomers.set(i, customer);
-                break;
-            }
+    public List<Customer> getAll(String name) {
+        if (name != null){
+            return customerRepository.findAllByNameLikeIgnoreCase("%" + name + "%");
         }
-        return customer;
+        return customerRepository.findAll();
     }
 
     @Override
-    public Customer deleteCustomer(Customer customer) {
-        dbCustomers.removeIf(c -> c.getId().equals(customer.getId()));
-        return customer;
+    public Customer getById(String id) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        return customer.orElseThrow(null);
     }
+
+    @Override
+    public Customer update(Customer customer) {
+        if (!customerRepository.existsById(customer.getId())) {
+            throw new IllegalArgumentException("Customer ID "+ customer.getId() + " not found");
+        }
+        return customerRepository.saveAndFlush(customer);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        customerRepository.deleteById(id);
+    }
+
+
+
 }

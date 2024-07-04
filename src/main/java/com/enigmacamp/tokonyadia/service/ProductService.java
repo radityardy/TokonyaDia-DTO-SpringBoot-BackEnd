@@ -6,9 +6,10 @@ import java.util.List;
 
 
 public interface ProductService {
-    Product saveProduct(Product product);
-    List<Product> getAllProduct();
-    Product updateProduct(Product product);
-    Product deleteProduct(Product product);
+    Product create(Product product);
+    List<Product> getAll(String name);
+    Product getById(String id);
+    Product update(Product product);
+    void deleteById(String id);
 
 }
