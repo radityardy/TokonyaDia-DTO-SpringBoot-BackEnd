@@ -1,10 +1,7 @@
 package com.enigmacamp.tokonyadia.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -13,13 +10,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "m_customer")
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "address", nullable = false)
     private String address;
@@ -28,7 +26,7 @@ public class Customer {
     @Column(name = "birth_date", nullable = false)
     private Date birthDate;
     @Column(name = "deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean deleted = Boolean.FALSE;
+    private boolean isDeleted = Boolean.FALSE;
 
     @Override
     public String toString() {
@@ -37,7 +35,7 @@ public class Customer {
                 ", address= " + address +
                 ", phone= " + phone +
                 ", birthDate= " + birthDate +
-                ", deleted= " + deleted;
+                ", deleted= " + isDeleted;
     }
 }
 

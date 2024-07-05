@@ -1,6 +1,5 @@
 package com.enigmacamp.tokonyadia.dto.request;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -8,19 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-@Data // Setter Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class CustomerRequest {
+public class ProductRequest {
     private String id;
     @NotBlank(message = "Name is required")
-    @Size(min = 5)
     private String name;
-    private String address;
-    private String phone;
-    private Date birthDate;
-
+    private Long price;
+    private Integer stock;
 }

@@ -1,16 +1,14 @@
 package com.enigmacamp.tokonyadia.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @AllArgsConstructor // Menghasilkan constructor yang menerima argumen
 @NoArgsConstructor // constructor yang tidak menerima argumen
 @Entity // entitas JPA yang tidak akan dipetaan ke database
+@Builder
 @Table(name = "m_product") // table "m_product"
 public class Product {
     @Id
@@ -23,13 +21,11 @@ public class Product {
     private Long price;
     @Column(name = "stock", nullable = false, columnDefinition = "INT CHECK (stock >= 0)")
     private Integer stock;
-
-    @Override
-    public String toString() {
-        return "Product: " +
-                "id= " + id +
-                ", name= " + name +
-                ", price= " + price +
-                ", stock= " + stock;
-    }
 }
+
+/*
+* siapa yang beli
+* produk apa yang di beli
+* kapan dia beli
+* jika produk lebih dari 1, produk mana saja yang di beli
+ */

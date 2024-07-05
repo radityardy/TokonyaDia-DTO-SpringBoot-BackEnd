@@ -1,15 +1,16 @@
 package com.enigmacamp.tokonyadia.controller;
 
+
 import com.enigmacamp.tokonyadia.constant.APIUrl;
-import com.enigmacamp.tokonyadia.entity.Product;
+import com.enigmacamp.tokonyadia.dto.request.ProductRequest;
+import com.enigmacamp.tokonyadia.dto.response.ProductResponse;
 import com.enigmacamp.tokonyadia.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -18,36 +19,32 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public Product createNewProduct(@RequestBody Product product) {
-        return productService.create(product);
+    public ResponseEntity<ProductResponse> createNewProduct(@RequestBody ProductRequest request) {
+        ProductResponse createProduct = productService.create(request);
+        return ResponseEntity.ok(createProduct);
     }
 
-    // /api/product?name = maka semua nama akan muncul namun jika di inputkan angka maka akan keluar sesuai namanya
-    @GetMapping
-    public List<Product> getAllProduct(
-            @RequestParam(name = "name", required = false) String name) {
-        return productService.getAll(name);
-    }
 
-    @GetMapping("/{id}") // /api/product/{UUID}
-    public Product getProductById(@PathVariable String id) {
-        return productService.getById(id);
+    @PutMapping
+    public ResponseEntity<ProductResponse> updateProduct(@Valid @RequestBody ProductRequest request) {
+        ProductResponse updateProduct = productService.updateProduct(request);
+        return ResponseEntity.ok(updateProduct);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody Product product) {
-        try {
-            product.setId(id);
-            Product updatedProduct = productService.update(product);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
 
     @DeleteMapping("/{id}")
-    public void deleteById(String id) {
-        productService.deleteById(id);
+    public ResponseEntity<String> deleteProduct(@PathVariable String id) {
+        productService.deleteProductById(id);
+        return ResponseEntity.ok(" Success delete customer with id " + id);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getCProductById(@PathVariable String id) {
+        ProductResponse productResponse = productService.getById(id);
+        return ResponseEntity.ok(productResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> getAllProduct(String id) {
+        return ResponseEntity.ok(productService.getAllProduct(id));
     }
 }

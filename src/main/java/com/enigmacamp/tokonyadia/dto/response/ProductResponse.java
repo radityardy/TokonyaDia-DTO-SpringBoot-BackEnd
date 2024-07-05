@@ -1,23 +1,19 @@
 package com.enigmacamp.tokonyadia.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.enigmacamp.tokonyadia.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerResponse {
+public class ProductResponse{
     private String id;
     private String name;
-    private String address;
-    private String phone;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date birthDate;
-
+    private Long price;
+    private Integer stock;
 }

@@ -1,12 +1,13 @@
 package com.enigmacamp.tokonyadia.controller;
 
+import com.enigmacamp.tokonyadia.constant.APIUrl;
 import com.enigmacamp.tokonyadia.dto.request.CustomerRequest;
 import com.enigmacamp.tokonyadia.dto.response.CustomerResponse;
-import com.enigmacamp.tokonyadia.entity.Customer;
 import com.enigmacamp.tokonyadia.repository.CustomerRepository;
 import com.enigmacamp.tokonyadia.service.CustomerService;
+import com.enigmacamp.tokonyadia.service.impl.CustomerServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,45 +15,40 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping(path = APIUrl.CUSTOMER_API)
 public class CustomerController {
-
     private final CustomerService customerService;
+    private final CustomerServiceImpl customerServiceImpl;
     private final CustomerRepository customerRepository;
 
-    @PostMapping()
-    public ResponseEntity<CustomerResponse> createCustomer(CustomerRequest request) {
+    @PostMapping
+    public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest request) {
         CustomerResponse createdCustomer = customerService.createCustomer(request);
         return ResponseEntity.ok(createdCustomer);
     }
 
-    @GetMapping
-    public List<Customer> getAllCustomer(@RequestParam(name = "name", required = false) String name) {
-        return customerService.getAll(name);
+    @PutMapping
+    public ResponseEntity<CustomerResponse> updateCustomer(@Valid @RequestBody CustomerRequest request) {
+        CustomerResponse createdCustomer = customerService.updateCustomer(request);
+        return ResponseEntity.ok(createdCustomer);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCustomer(@PathVariable String id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.ok("Success Delete Customer By Id");
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable String id) {
-        return customerService.getById(id);
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable String id) {
+        CustomerResponse customerResponse = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customerResponse);
     }
 
-    @PutMapping("/{id}")
-public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable String id, @RequestBody CustomerRequest request) {
-    // Assuming you have an update method that takes an id and a CustomerRequest
-    Customer updatedCustomer = customerService.update(id, request);
-
-    // Convert updated customer to CustomerResponse
-    CustomerResponse response = new CustomerResponse();
-    response.setName(updatedCustomer.getName());
-    response.setAddress(updatedCustomer.getAddress());
-    response.setPhone(updatedCustomer.getPhone());
-    // Add other fields as necessary
-
-    return ResponseEntity.ok(response);
-}
-
-    @DeleteMapping("/{id}")
-    public void deleteById(String id) {
-        customerService.deleteById(id);
+    @GetMapping
+    public ResponseEntity<List<CustomerResponse>> getAllCustomer() {
+        return ResponseEntity.ok(customerService.getAllCustomer());
     }
+
 }
