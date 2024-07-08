@@ -1,4 +1,4 @@
-package com.enigmacamp.tokonyadia.dto.response;
+package com.enigmacamp.tokonyadia.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

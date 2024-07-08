@@ -1,5 +1,4 @@
-package com.enigmacamp.tokonyadia.dto.response;
-
+package com.enigmacamp.tokonyadia.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionDetailResponse {
-    private String id;
-    private ProductResponse product;
-    private Long productPrice;
+public class TransactionDetailRequest {
+    private String productId;
     private Integer qty;
 }

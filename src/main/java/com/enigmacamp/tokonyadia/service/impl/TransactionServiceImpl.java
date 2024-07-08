@@ -1,12 +1,11 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
-import com.enigmacamp.tokonyadia.dto.request.TransactionRequest;
-import com.enigmacamp.tokonyadia.dto.response.CustomerResponse;
-import com.enigmacamp.tokonyadia.dto.response.TransactionResponse;
-import com.enigmacamp.tokonyadia.entity.Customer;
-import com.enigmacamp.tokonyadia.entity.Product;
-import com.enigmacamp.tokonyadia.entity.Transaction;
-import com.enigmacamp.tokonyadia.entity.TransactionDetail;
+import com.enigmacamp.tokonyadia.model.dto.request.TransactionRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.TransactionResponse;
+import com.enigmacamp.tokonyadia.model.entity.Customer;
+import com.enigmacamp.tokonyadia.model.entity.Product;
+import com.enigmacamp.tokonyadia.model.entity.Transaction;
+import com.enigmacamp.tokonyadia.model.entity.TransactionDetail;
 import com.enigmacamp.tokonyadia.repository.TransactionDetailRepository;
 import com.enigmacamp.tokonyadia.repository.TransactionRepository;
 import com.enigmacamp.tokonyadia.service.CustomerService;
@@ -18,14 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final TransactionDetailRepository repo;
+    private final TransactionDetailRepository transactionDetailRepository;
     private final CustomerService customerService;
     private final ProductService productService;
 
@@ -33,25 +34,46 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse create(TransactionRequest transactionRequest) {
         Customer customer = customerService.getById(transactionRequest.getCustomerId());
+        Date currentDate = new Date(); //Date dari Server/service
         Transaction transaction = Transaction.builder()
                 .customer(customer)
+                .date(currentDate)
                 .build();
-        Long totalPayment;
+        AtomicReference<Long> totalPayment = new AtomicReference<>(0L);
+
         List<TransactionDetail> transactionDetails = transactionRequest.getTransactionDetails().stream().map(detailRequest -> {
             Product product = productService.getProductById(detailRequest.getProductId());
             if (product.getStock() - detailRequest.getQty() < 0) {
                 throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Stock tidak mencukupi");
             }
+
             product.setStock(product.getStock() - detailRequest.getQty());
-//            totalPayment += product.getPrice();
             TransactionDetail trxDetail = TransactionDetail.builder()
-                   .product(product)
-                   .qty(detailRequest.getQty())
+                    .product(product)
+                    .transaction(transaction)
+                    .qty(detailRequest.getQty())
                     .productPrice(product.getPrice())
-                   .build();
-            repo.saveAndFlush(trxDetail);
+                    .build();
+
+            // Logic" discount
+            totalPayment.updateAndGet(v -> v + product.getPrice() * detailRequest.getQty());
+
+            //TODO: Insert Transaction Detail
+            transactionDetailRepository.save(trxDetail);
             return trxDetail;
         }).toList();
-        return null;
+
+        //TODO: Insert Transaction
+        transaction.setTransactionDetails(transactionDetails);
+        Transaction resultTransaction = transactionRepository.saveAndFlush(transaction);
+
+        //TODO: Create Transaction Response
+        return TransactionResponse.builder()
+                .id(resultTransaction.getId())
+                .customer(resultTransaction.getCustomer())
+                .date(resultTransaction.getDate())
+                .transactionDetails(resultTransaction.getTransactionDetails())
+                .totalPayment(totalPayment.get())
+                .build();
     }
 }

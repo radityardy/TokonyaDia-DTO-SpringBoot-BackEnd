@@ -1,6 +1,5 @@
-package com.enigmacamp.tokonyadia.dto.request;
+package com.enigmacamp.tokonyadia.model.dto.request;
 
-import com.enigmacamp.tokonyadia.entity.TransactionDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

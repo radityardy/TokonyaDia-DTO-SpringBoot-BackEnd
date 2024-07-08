@@ -1,8 +1,8 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
-import com.enigmacamp.tokonyadia.dto.request.CustomerRequest;
-import com.enigmacamp.tokonyadia.dto.response.CustomerResponse;
-import com.enigmacamp.tokonyadia.entity.Customer;
+import com.enigmacamp.tokonyadia.model.dto.request.CustomerRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.CustomerResponse;
+import com.enigmacamp.tokonyadia.model.entity.Customer;
 import com.enigmacamp.tokonyadia.repository.CustomerRepository;
 import com.enigmacamp.tokonyadia.service.CustomerService;
 import lombok.RequiredArgsConstructor;

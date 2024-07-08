@@ -2,8 +2,8 @@ package com.enigmacamp.tokonyadia.controller;
 
 
 import com.enigmacamp.tokonyadia.constant.APIUrl;
-import com.enigmacamp.tokonyadia.dto.request.ProductRequest;
-import com.enigmacamp.tokonyadia.dto.response.ProductResponse;
+import com.enigmacamp.tokonyadia.model.dto.request.ProductRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.ProductResponse;
 import com.enigmacamp.tokonyadia.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +46,11 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProduct(String id) {
         return ResponseEntity.ok(productService.getAllProduct(id));
+    }
+
+    @PatchMapping()
+    public ResponseEntity<String> updatePatch(@RequestBody ProductRequest payload) {
+        productService.updatePatch(payload);
+        return ResponseEntity.ok("Success update stock for product with id ");
     }
 }

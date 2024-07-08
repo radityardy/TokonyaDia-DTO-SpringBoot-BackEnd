@@ -1,5 +1,6 @@
-package com.enigmacamp.tokonyadia.entity;
+package com.enigmacamp.tokonyadia.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class TransactionDetail {
 
     @ManyToOne
     @JoinColumn(name = "transaction_id")
+    @JsonIgnore
     private Transaction transaction;
 
     @ManyToOne

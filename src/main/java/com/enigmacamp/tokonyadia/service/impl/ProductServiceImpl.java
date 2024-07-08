@@ -1,8 +1,8 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
-import com.enigmacamp.tokonyadia.dto.request.ProductRequest;
-import com.enigmacamp.tokonyadia.dto.response.ProductResponse;
-import com.enigmacamp.tokonyadia.entity.Product;
+import com.enigmacamp.tokonyadia.model.dto.request.ProductRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.ProductResponse;
+import com.enigmacamp.tokonyadia.model.entity.Product;
 import com.enigmacamp.tokonyadia.repository.ProductRepository;
 import com.enigmacamp.tokonyadia.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +58,18 @@ public class ProductServiceImpl implements ProductService {
                         .build()
         );
         return convertToProductResponse(product);
+    }
+
+    @Override
+    public ProductResponse updatePatch(ProductRequest request) {
+        Product existingProduct = findByIdOrThrowNotFound(request.getId());
+        if (request.getName() != null) existingProduct.setName(request.getName());
+        if (request.getStock() != null) existingProduct.setStock(request.getStock());
+        if (request.getPrice() != null) existingProduct.setPrice(request.getPrice());
+
+        productRepository.saveAndFlush(existingProduct);
+
+        return convertToProductResponse(existingProduct);
     }
 
     @Override

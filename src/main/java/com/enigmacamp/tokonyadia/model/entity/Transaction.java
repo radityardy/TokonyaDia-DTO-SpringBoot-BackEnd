@@ -1,4 +1,4 @@
-package com.enigmacamp.tokonyadia.entity;
+package com.enigmacamp.tokonyadia.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +25,6 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    @OneToMany(mappedBy = "transaction") //menyambung ke tabel transaction detail kolom transaction_id
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true) //menyambung ke tabel transaction detail kolom transaction_id
     private List<TransactionDetail> transactionDetails;
 }
