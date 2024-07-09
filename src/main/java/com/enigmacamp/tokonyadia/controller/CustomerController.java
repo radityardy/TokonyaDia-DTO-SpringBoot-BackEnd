@@ -3,14 +3,18 @@ package com.enigmacamp.tokonyadia.controller;
 import com.enigmacamp.tokonyadia.constant.APIUrl;
 import com.enigmacamp.tokonyadia.model.dto.request.CustomerRequest;
 import com.enigmacamp.tokonyadia.model.dto.response.CustomerResponse;
-import com.enigmacamp.tokonyadia.repository.CustomerRepository;
+import com.enigmacamp.tokonyadia.model.dto.response.PageResponse;
 import com.enigmacamp.tokonyadia.service.CustomerService;
-import com.enigmacamp.tokonyadia.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -18,8 +22,6 @@ import java.util.List;
 @RequestMapping(path = APIUrl.CUSTOMER_API)
 public class CustomerController {
     private final CustomerService customerService;
-    private final CustomerServiceImpl customerServiceImpl;
-    private final CustomerRepository customerRepository;
 
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest request) {
@@ -33,22 +35,48 @@ public class CustomerController {
         return ResponseEntity.ok(createdCustomer);
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable String id) {
         customerService.deleteCustomer(id);
+        // block jika terjadi exception pada line 35
         return ResponseEntity.ok("Success Delete Customer By Id");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable String id) {
+    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable String id) {
         CustomerResponse customerResponse = customerService.getCustomerById(id);
         return ResponseEntity.ok(customerResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomer() {
-        return ResponseEntity.ok(customerService.getAllCustomer());
-    }
+    public ResponseEntity<PageResponse<CustomerResponse>> getAllCustomer(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "5") Integer size,
+            @RequestParam(name = "sortType", defaultValue = "ASC") String sortType,
+            @RequestParam(name = "property", defaultValue = "name") String property,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
+            @RequestParam(name = "address", required = false) String address,
+            @RequestParam(name = "birthDate", required = false) Date birthDate
+    ) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortType), property);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
+        CustomerRequest customerRequest = CustomerRequest.builder()
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .address(address)
+                .birthDate(birthDate)
+                .build();
+
+        Page<CustomerResponse> customerResponse = customerService.getCustomerPerPage(pageable, customerRequest);
+
+        if (customerResponse.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        PageResponse<CustomerResponse> pageResponse = new PageResponse<>(customerResponse);
+
+        return ResponseEntity.ok(pageResponse);
+    }
 }

@@ -11,6 +11,8 @@ import com.enigmacamp.tokonyadia.repository.TransactionRepository;
 import com.enigmacamp.tokonyadia.service.CustomerService;
 import com.enigmacamp.tokonyadia.service.ProductService;
 import com.enigmacamp.tokonyadia.service.TransactionService;
+
+import com.enigmacamp.tokonyadia.utils.exeptions.ValidationExeption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,20 +36,22 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse create(TransactionRequest transactionRequest) {
         Customer customer = customerService.getById(transactionRequest.getCustomerId());
-        Date currentDate = new Date(); //Date dari Server/service
+        Date currentDate = new Date(); // Date on service
         Transaction transaction = Transaction.builder()
                 .customer(customer)
                 .date(currentDate)
                 .build();
+
         AtomicReference<Long> totalPayment = new AtomicReference<>(0L);
 
         List<TransactionDetail> transactionDetails = transactionRequest.getTransactionDetails().stream().map(detailRequest -> {
             Product product = productService.getProductById(detailRequest.getProductId());
-            if (product.getStock() - detailRequest.getQty() < 0) {
-                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Stock tidak mencukupi");
+            if(product.getStock() - detailRequest.getQty() < 0){
+                throw new ValidationExeption("the product currently out of stock");
             }
 
             product.setStock(product.getStock() - detailRequest.getQty());
+
             TransactionDetail trxDetail = TransactionDetail.builder()
                     .product(product)
                     .transaction(transaction)
@@ -55,7 +59,6 @@ public class TransactionServiceImpl implements TransactionService {
                     .productPrice(product.getPrice())
                     .build();
 
-            // Logic" discount
             totalPayment.updateAndGet(v -> v + product.getPrice() * detailRequest.getQty());
 
             //TODO: Insert Transaction Detail
@@ -73,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .customer(resultTransaction.getCustomer())
                 .date(resultTransaction.getDate())
                 .transactionDetails(resultTransaction.getTransactionDetails())
-                .totalPayment(totalPayment.get())
+                .totalPayment(totalPayment.get()) // TODO: Create total Payment
                 .build();
     }
 }

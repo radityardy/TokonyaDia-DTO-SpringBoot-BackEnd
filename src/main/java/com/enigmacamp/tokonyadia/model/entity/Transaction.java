@@ -8,11 +8,11 @@ import java.util.List;
 
 @Setter
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
+@AllArgsConstructor // Menghasilkan constructor yang menerima argumen
+@NoArgsConstructor // Constructor yang tidak menerima argumen
+@Entity // entitas JPA yang akan dipetakan ke database
 @Builder
-@Table(name = "transaction")
+@Table(name = "transaction") // table "m_product"
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,6 +25,8 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true) //menyambung ke tabel transaction detail kolom transaction_id
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransactionDetail> transactionDetails;
 }
+
+

@@ -1,41 +1,31 @@
 package com.enigmacamp.tokonyadia.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.Date;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
 @Table(name = "m_customer")
 public class Customer {
+    // buat CRUD nya kaya product
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
-    @Column(name = "address", nullable = false)
+    @Column(name = "phone_number")
+    private String phoneNumber;
+    @Column(name = "address")
     private String address;
-    @Column(name = "phone", nullable = false)
-    private String phone;
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private Date birthDate;
-    @Column(name = "deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "deleted")
     private boolean isDeleted = Boolean.FALSE;
-
-    @Override
-    public String toString() {
-        return "id= " + id +
-                ", fullName= " + name +
-                ", address= " + address +
-                ", phone= " + phone +
-                ", birthDate= " + birthDate +
-                ", deleted= " + isDeleted;
-    }
 }
-

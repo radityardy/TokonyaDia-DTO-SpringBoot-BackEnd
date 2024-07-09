@@ -1,6 +1,5 @@
 package com.enigmacamp.tokonyadia.model.dto.response;
 
-
 import com.enigmacamp.tokonyadia.model.entity.Customer;
 import com.enigmacamp.tokonyadia.model.entity.TransactionDetail;
 import lombok.AllArgsConstructor;
@@ -12,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TransactionResponse {
     private String id;

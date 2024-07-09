@@ -15,9 +15,8 @@ import java.util.Date;
 public class CustomerResponse {
     private String id;
     private String name;
+    private String phoneNumber;
     private String address;
-    private String phone;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
-
 }

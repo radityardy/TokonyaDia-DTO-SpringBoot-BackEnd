@@ -6,13 +6,17 @@ import com.enigmacamp.tokonyadia.model.entity.Product;
 
 import java.util.List;
 
-
 public interface ProductService {
     ProductResponse create(ProductRequest request);
-    ProductResponse updateProduct(ProductRequest request);
-    ProductResponse updatePatch(ProductRequest request);
-    void deleteProductById(String id);
+
+    List<ProductResponse> getAll(String name);
+
     ProductResponse getById(String id);
-    List<ProductResponse> getAllProduct(String name);
+
+    ProductResponse updatePut(ProductRequest request);
+
+    ProductResponse updatePatch(ProductRequest request);
+
+    void deleteById(String id);
     Product getProductById(String id);
 }

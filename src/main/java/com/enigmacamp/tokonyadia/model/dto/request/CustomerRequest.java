@@ -1,6 +1,5 @@
 package com.enigmacamp.tokonyadia.model.dto.request;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,8 +18,7 @@ public class CustomerRequest {
     @NotBlank(message = "Name is required")
     @Size(min = 5)
     private String name;
+    private String phoneNumber;
     private String address;
-    private String phone;
     private Date birthDate;
-
 }

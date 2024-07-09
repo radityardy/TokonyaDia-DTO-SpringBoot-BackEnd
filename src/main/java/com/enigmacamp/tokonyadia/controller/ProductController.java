@@ -1,16 +1,18 @@
 package com.enigmacamp.tokonyadia.controller;
 
-
 import com.enigmacamp.tokonyadia.constant.APIUrl;
 import com.enigmacamp.tokonyadia.model.dto.request.ProductRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.CommonResponse;
 import com.enigmacamp.tokonyadia.model.dto.response.ProductResponse;
+import com.enigmacamp.tokonyadia.model.entity.Product;
 import com.enigmacamp.tokonyadia.service.ProductService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,38 +21,62 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createNewProduct(@RequestBody ProductRequest request) {
-        ProductResponse createProduct = productService.create(request);
-        return ResponseEntity.ok(createProduct);
+    public ResponseEntity<CommonResponse<ProductResponse>> createNewProduct(@RequestBody ProductRequest payload) {
+        ProductResponse product = productService.create(payload);
+
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "New product added!", Optional.of(product));
+        return ResponseEntity.ok(response);
     }
 
+    // /api/product?name=laptop
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> getAllProduct(
+            @RequestParam(name = "name", required = false) String name
+    ) {
+        List<ProductResponse> productList = productService.getAll(name);
+
+        CommonResponse<List<ProductResponse>> response = CommonResponse.<List<ProductResponse>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("All product data")
+                .data(Optional.of(productList))
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}") // /api/product/{UUID}
+    public ResponseEntity<CommonResponse<ProductResponse>> getProductById(@PathVariable String id) {
+        ProductResponse product = productService.getById(id);
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "", Optional.of(product));
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping
-    public ResponseEntity<ProductResponse> updateProduct(@Valid @RequestBody ProductRequest request) {
-        ProductResponse updateProduct = productService.updateProduct(request);
-        return ResponseEntity.ok(updateProduct);
+    public ResponseEntity<CommonResponse<ProductResponse>> updateProduct(@RequestBody ProductRequest payload) {
+        ProductResponse product = productService.updatePut(payload);
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "Product Updated", Optional.of(product));
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable String id) {
-        productService.deleteProductById(id);
-        return ResponseEntity.ok(" Success delete customer with id " + id);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getCProductById(@PathVariable String id) {
-        ProductResponse productResponse = productService.getById(id);
-        return ResponseEntity.ok(productResponse);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProduct(String id) {
-        return ResponseEntity.ok(productService.getAllProduct(id));
+    public ResponseEntity<CommonResponse<ProductResponse>> deleteProductById(@PathVariable String id) {
+        productService.deleteById(id);
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "Success Delete Product by id", Optional.empty());
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping()
-    public ResponseEntity<String> updatePatch(@RequestBody ProductRequest payload) {
+    public ResponseEntity<CommonResponse<ProductResponse>> updateStock(@RequestBody ProductRequest payload) {
         productService.updatePatch(payload);
-        return ResponseEntity.ok("Success update stock for product with id ");
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "Success update stock product by id", Optional.empty());
+        return ResponseEntity.ok(response);
+    }
+
+    private CommonResponse<ProductResponse> generateProductResponse(Integer code, String message, Optional<ProductResponse> productResponse){
+        return CommonResponse.<ProductResponse>builder()
+                .statusCode(code)
+                .message(message)
+                .data(productResponse)
+                .build();
     }
 }

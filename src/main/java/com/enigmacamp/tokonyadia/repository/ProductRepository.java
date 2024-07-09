@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
     // findAllByNameLike --> query
-
-    List<Product> findAllByNameLikeIgnoreCase(String name);
-
+    List<Product> findAllByNameLikeOrderByNameAsc(String name);
     // % LIKE %
-
 }
+

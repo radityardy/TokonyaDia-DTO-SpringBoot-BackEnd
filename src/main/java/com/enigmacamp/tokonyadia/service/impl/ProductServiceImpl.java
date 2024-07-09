@@ -1,10 +1,13 @@
 package com.enigmacamp.tokonyadia.service.impl;
 
 import com.enigmacamp.tokonyadia.model.dto.request.ProductRequest;
+import com.enigmacamp.tokonyadia.model.dto.response.CustomerResponse;
 import com.enigmacamp.tokonyadia.model.dto.response.ProductResponse;
+import com.enigmacamp.tokonyadia.model.entity.Customer;
 import com.enigmacamp.tokonyadia.model.entity.Product;
 import com.enigmacamp.tokonyadia.repository.ProductRepository;
 import com.enigmacamp.tokonyadia.service.ProductService;
+import com.enigmacamp.tokonyadia.utils.exeptions.ResourceNotFoundExeption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,76 +18,76 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    //    List<Product> dbProduct = new ArrayList<Product>();
     private final ProductRepository productRepository;
 
     @Override
     public ProductResponse create(ProductRequest request) {
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
+        Product product  = Product.builder()
+                .name(request.getName())
+                .price(request.getPrice())
+                .stock(request.getStock())
+                .build();
 
-
-        product = productRepository.saveAndFlush(product);
-        return convertToProductResponse(product);
+        return convertToProductResponse(productRepository.saveAndFlush(product));
     }
 
     @Override
-    public List<ProductResponse> getAllProduct(String name) {
+    public List<ProductResponse> getAll(String name) {
+        if (name != null) {
+            return productRepository.findAllByNameLikeOrderByNameAsc("%" + name + "%").stream().map(this::convertToProductResponse).toList();
+        }
         return productRepository.findAll().stream().map(this::convertToProductResponse).toList();
     }
 
     @Override
-    public Product getProductById(String id) {
-        return findByIdOrThrowNotFound(id);
-    }
-
-    @Override
     public ProductResponse getById(String id) {
-        Product product = findByIdOrThrowNotFound(id);
-        return convertToProductResponse(product);
+        return convertToProductResponse(findByidOrThrowNotFound(id));
     }
 
     @Override
-    public ProductResponse updateProduct(ProductRequest request) {
-        findByIdOrThrowNotFound(request.getId());
-        Product product = productRepository.saveAndFlush(
-                Product.builder()
-                        .id(request.getId())
-                        .name(request.getName())
-                        .price(request.getPrice())
-                        .stock(request.getStock())
-                        .build()
-        );
-        return convertToProductResponse(product);
+    public ProductResponse updatePut(ProductRequest request) {
+        findByidOrThrowNotFound(request.getId());
+
+        Product product = Product.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .price(request.getPrice())
+                .stock(request.getStock())
+                .build();
+
+        return convertToProductResponse(productRepository.saveAndFlush(product));
     }
 
     @Override
     public ProductResponse updatePatch(ProductRequest request) {
-        Product existingProduct = findByIdOrThrowNotFound(request.getId());
+        findByidOrThrowNotFound(request.getId());
+
+        Product existingProduct = getProductById(request.getId());
+
         if (request.getName() != null) existingProduct.setName(request.getName());
         if (request.getStock() != null) existingProduct.setStock(request.getStock());
         if (request.getPrice() != null) existingProduct.setPrice(request.getPrice());
 
-        productRepository.saveAndFlush(existingProduct);
-
-        return convertToProductResponse(existingProduct);
+        return convertToProductResponse(productRepository.saveAndFlush(existingProduct));
     }
 
     @Override
-    public void deleteProductById(String id) {
-        Product product = findByIdOrThrowNotFound(id);
+    public void deleteById(String id) {
+        Product product = findByidOrThrowNotFound(id);
         productRepository.delete(product);
-
     }
 
-    private Product findByIdOrThrowNotFound(String id) {
-        return productRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " Data not found "));
+    @Override
+    public Product getProductById(String id) {
+        return findByidOrThrowNotFound(id);
     }
 
+    private Product findByidOrThrowNotFound(String id){
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundExeption("Product not found"));
+
+        return product;
+    }
 
     private ProductResponse convertToProductResponse(Product product) {
         return ProductResponse.builder()
