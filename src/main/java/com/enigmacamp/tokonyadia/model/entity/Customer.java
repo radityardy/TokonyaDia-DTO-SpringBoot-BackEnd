@@ -14,7 +14,6 @@ import java.util.Date;
 @Builder
 @Table(name = "m_customer")
 public class Customer {
-    // buat CRUD nya kaya product
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -28,4 +27,8 @@ public class Customer {
     private Date birthDate;
     @Column(name = "deleted")
     private boolean isDeleted = Boolean.FALSE;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

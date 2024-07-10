@@ -26,7 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse createCustomer(CustomerRequest request) {
         // Create entitas baru daru customerRequest
-        Customer customer =  new Customer();
+        Customer customer = new Customer();
         customer.setName(request.getName());
         customer.setPhoneNumber(request.getPhoneNumber());
         customer.setAddress(request.getAddress());
@@ -53,8 +53,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(String id) {
+//        Customer customer = findByidOrThrowNotFound(id);
+//        customerRepository.delete(customer)
         Customer customer = findByidOrThrowNotFound(id);
-        customerRepository.delete(customer);
+        customer.setDeleted(true);
+        customerRepository.save(customer);
     }
 
 
@@ -83,8 +86,8 @@ public class CustomerServiceImpl implements CustomerService {
         return customerList.map(this::convertToCustomerResponse);
     }
 
-    private Customer findByidOrThrowNotFound(String id){
-        return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Data not found"));
+    private Customer findByidOrThrowNotFound(String id) {
+        return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data not found"));
     }
 
     private CustomerResponse convertToCustomerResponse(Customer customer) {

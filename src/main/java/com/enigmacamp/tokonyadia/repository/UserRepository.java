@@ -1,9 +1,10 @@
 package com.enigmacamp.tokonyadia.repository;
 
-import com.enigmacamp.tokonyadia.model.entity.Transaction;
+
+import com.enigmacamp.tokonyadia.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction,String> {
+public interface UserRepository extends JpaRepository<User, String>{
 }
