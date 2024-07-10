@@ -12,7 +12,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthRequest<T> {
+public class AuthRequestDTO<T> {
     private String username;
     private String password;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerSpecification {
-    public static Specification<Customer> getSpecificationByName(CustomerRequest customerRequest) {
+    public static Specification<Customer> getSpecification(CustomerRequest customerRequest) {
         return ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -33,4 +33,5 @@ public class CustomerSpecification {
             return criteriaBuilder.and(arrayPredicate);
         });
     }
+
 }

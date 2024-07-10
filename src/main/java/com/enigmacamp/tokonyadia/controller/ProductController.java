@@ -4,7 +4,6 @@ import com.enigmacamp.tokonyadia.constant.APIUrl;
 import com.enigmacamp.tokonyadia.model.dto.request.ProductRequest;
 import com.enigmacamp.tokonyadia.model.dto.response.CommonResponse;
 import com.enigmacamp.tokonyadia.model.dto.response.ProductResponse;
-import com.enigmacamp.tokonyadia.model.entity.Product;
 import com.enigmacamp.tokonyadia.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

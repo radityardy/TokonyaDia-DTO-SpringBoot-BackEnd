@@ -1,5 +1,7 @@
 package com.enigmacamp.tokonyadia.model.dto.request;
 
+import com.enigmacamp.tokonyadia.model.entity.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,9 @@ public class CustomerRequest {
     @NotBlank(message = "Name is required")
     @Size(min = 5)
     private String name;
+    @JsonProperty("phone_number")
     private String phoneNumber;
     private String address;
     private Date birthDate;
+    private User user;
 }
